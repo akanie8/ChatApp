@@ -21,8 +21,10 @@ const welcome = () => {
         </View>
         {/* footer */}
         <View style={styles.footer}>
-            <Button
-
+            <Button 
+                title='Join Our Chirstian House Journey'
+                buttonStyle={{marginHorizontal: wp(3)}}
+                onPress={() =>{}}
             />
         </View>
       </View>
@@ -56,5 +58,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: wp(10),
         fontSize: hp(1.7),
         color: theme.colors.text
+    },
+    footer: {
+        gap: 30,
+        width: '100%'
     }
-})
+}) 
