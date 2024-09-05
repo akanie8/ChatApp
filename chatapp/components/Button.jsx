@@ -2,12 +2,13 @@ import { View, Text, Pressable, StyleSheet } from 'react-native'
 import React from 'react'
 import { theme } from '../constants/theme'
 import { hp } from '../helpers/common'
+import Loading from './Loading'
 
 const Button = ({
     buttonStyle,
     textStyle,
     title='',
-    onPress=() =>{},
+    onPress=() =>{}, 
     loading = false,
     hasShadow = true,
 }) => {
@@ -18,6 +19,14 @@ const Button = ({
         shadowOpacity: 0.2,
         shadowRadius: 8,
         elevation: 4
+    }
+
+    if(loading){
+        return(
+            <View style={[styles.button, buttonStyle, {backgroundColor: 'white'}]}>
+                <Loading/>
+            </View>
+        )
     }
 
 
