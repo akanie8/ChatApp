@@ -18,6 +18,11 @@ const styles = StyleSheet.create({
   button:{
     alignSelf: 'flex-start',
     padding: 5,
-    borderRadius: theme.radius.sm,
+    borderRadius: theme.radius.md,
+    shadowOffset: 0.2,
+    shadowOpacity: 0.2,
+    top: 0,
+    left: 0,
+    position: 'absolute'
   }
 })
