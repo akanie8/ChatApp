@@ -12,5 +12,4 @@ const index = () => {
     </ScreenWrapper>
   )
 }
-
 export default index

@@ -1,131 +1,157 @@
-import { Alert, Pressable, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native'
-import React, { useRef, useState } from 'react'
-import ScreenWrapper from '../components/ScreenWrapper'
-import { theme } from '../constants/theme'
-import Icon from '../assets/icons'
-import BackButton from '../components/BackButton'
-import { useRouter } from 'expo-router'
-import { hp, wp } from '../helpers/common'
-import Input from '../components/Input'
-import Button from '../components/Button'
+import { Alert, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import ScreenWrapper from '../components/ScreenWrapper';
+import { theme } from '../constants/theme';
+import Icon from '../assets/icons';
+import BackButton from '../components/BackButton';
+import { useRouter } from 'expo-router';
+import { hp, wp } from '../helpers/common';
+import Input from '../components/Input';
+import Button from '../components/Button';
+import axios from 'axios';
 
-const signup = () => {
-    const router = useRouter();
-    const nameRef = useRef("")
-    const emailRef = useRef("");
-    const phoneRef = useRef("")
-    const passwordRef = useRef("");
-    const [loading, setloading] = useState(false);
+const Signup = () => {
+  const router = useRouter();
 
-    const onSubmit = async () => {
-        if(!emailRef.current || !passwordRef.current){
-          Alert.alert('Sign Up', "Please fill all the fields");
-          return;
-        }
+  // State management for form fields
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async () => {
+    if(!name || !email || !phone || !password){
+      return Alert.alert('Error', 'All fields are required');
     }
 
-  return (
-    <ScreenWrapper bg="white"> 
-      <StatusBar barStyle={"default"}/>
-      <View style={styles.container}>
-      <BackButton router={router}/>
-      {/* welcome */}
-      <View style={styles.welcomeContainer}>
-        <Text style={styles.welcomeText}>Your Journey Starts Here,</Text>
-        <Text style={styles.welcomeText}>We Love to see you</Text>
-      </View>
+    setLoading(true);
 
-      {/* Form */}
-      <View style={styles.form}>
-      <Text style={{fontSize: hp(2), color: theme.colors.text}}>
-        Please enter your details to get started
-      </Text>
+    try{
+      const response = await axios.post('http://172.16.8.100:3001/signup', {
+        Name: name,
+        Email: email,
+        Password: password,
+        PhoneNumber: phone,
+      });
 
-      <Input
-        icon={<Icon name={'user'} size={26} strokeWidth={1.6} color={theme.colors.text}/> }
-        placeholder='Enter your name'
-        onChangeText={value => nameRef.current = value}
-      />
-
-      <Input
-        icon={<Icon name={'mail'} size={26} strokeWidth={1.6} color={theme.colors.text}/> }
-        placeholder='Enter your valid email'
-        onChangeText={value => emailRef.current = value}
-      />
-
-      <Input
-        icon={<Icon name={'call'} size={26} strokeWidth={1.6} color={theme.colors.text}/> }
-        placeholder='Enter your valid phone number'
-        onChangeText={value => phoneRef.current = value}
-      />
-
-      <Input
-        icon={<Icon name={'lock'} size={26} strokeWidth={1.6} color={theme.colors.text}/> }
-        placeholder='Enter your valid password'
-        secureTextEntry
-        
-        onChangeText={value => emailRef.current = value}
-      />
-
+      if(response.status === 201){
+        Alert.alert('Success', 'You have signed up successfully');
+        router.push('login');
+      }else{
+        Alert.alert('Error', response.data.message || 'An error occurred');
+      }
       
-      <Text style={styles.forgotPassword}>
-        Forgot Password?
-      </Text>
-      </View>
-        <Button title={'Login'} loading={loading} onPress={onSubmit} />
+    }catch (error){
+      console.error('Error:', error);
+      Alert.alert('Error', error.response?.data?.message || 'Could not connect to the server');
+    } finally{
+      setLoading(false);
+    }
 
-        {/* footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footText}>
-            Dont have an account?
+  };
+
+  return (
+    <ScreenWrapper bg="white">
+      <StatusBar barStyle={"default"} />
+      <View style={styles.container}>
+        <BackButton router={router} />
+
+        {/* Welcome Section */}
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.welcomeText}>Your Journey Starts Here,</Text>
+          <Text style={styles.welcomeText}>We Love To See You</Text>
+        </View>
+
+        {/* Form Section */}
+        <View style={styles.form}>
+          <Text style={{ fontSize: hp(2), color: theme.colors.text }}>
+            Please enter your details to get started
           </Text>
-          <Pressable>
-            <Text style={[styles.footText, {color: theme.colors.primaryDark,fontWeight: theme.fonts.semibold}]}>Sign Up</Text>
+
+          {/* Name Input */}
+          <Input
+            icon={<Icon name={'user'} size={26} strokeWidth={1.6} color={theme.colors.text} />}
+            placeholder='Enter your name'
+            value={name}
+            onChangeText={setName}
+          />
+
+          {/* Email Input */}
+          <Input
+            icon={<Icon name={'mail'} size={26} strokeWidth={1.6} color={theme.colors.text} />}
+            placeholder='Enter your valid email'
+            value={email}
+            onChangeText={setEmail}
+          />
+
+          {/* Phone Input */}
+          <Input
+            icon={<Icon name={'call'} size={26} strokeWidth={1.6} color={theme.colors.text} />}
+            placeholder='Enter your valid phone number'
+            keyboardType="phone-pad"
+            value={phone}
+            onChangeText={setPhone}
+          />
+
+          {/* Password Input */}
+          <Input
+            icon={<Icon name={'lock'} size={26} strokeWidth={1.6} color={theme.colors.text} />}
+            placeholder='Enter your valid password'
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+        </View>
+
+        {/* Submit Button */}
+        <Button title={'Sign Up'} loading={loading} onPress={onSubmit} />
+
+        {/* Footer Section */}
+        <View style={styles.footer}>
+          <Text style={styles.footText}>Already have an account?</Text>
+          <Pressable onPress={() => router.push('login')}>
+            <Text style={[styles.footText, { color: theme.colors.primaryDark, fontWeight: theme.fonts.semibold }]}>
+              Login
+            </Text>
           </Pressable>
         </View>
       </View>
     </ScreenWrapper>
-  )  
-}
+  );
+};
 
-export default signup
+export default Signup;
 
 const styles = StyleSheet.create({
-  container:{
+  container: {
     flex: 1,
     gap: 45,
-    paddingHorizontal: wp(5)
+    paddingHorizontal: wp(5),
   },
-
-  welcomeText:{
+  welcomeText: {
     fontSize: hp(4),
     fontWeight: theme.fonts.bold,
     color: theme.colors.text,
     textAlign: 'left',
-
   },
-
   form: {
     gap: 15,
   },
-  forgotPassword: {
-    textAlign: 'left',
-    fontWeight: theme.fonts.semibold,
-    color: theme.colors.text,
-  },
-  footer:{
+  footer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'centre',
+    alignItems: 'center',
     gap: 5,
   },
-  footText:{
+  footText: {
     textAlign: 'center',
     color: theme.colors.text,
-    fontSize: hp(1.6)
+    fontSize: hp(1.6),
   },
-  welcomeContainer:{
+  welcomeContainer: {
     marginTop: hp(10),
-    marginButtom: hp(3),
-  }
-})
+    marginBottom: hp(3),
+  },
+});
